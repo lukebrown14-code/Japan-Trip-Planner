@@ -1,0 +1,25 @@
+import { chromium } from 'playwright';
+const mobile = process.argv[2] === 'mobile';
+const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const ctx = await b.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 800 }, hasTouch: mobile, isMobile: mobile });
+const p = await ctx.newPage(); const errs = [];
+p.on('console', m => { if (m.type() === 'error') errs.push(m.text().slice(0, 200)); });
+p.on('pageerror', e => errs.push('PAGEERR ' + String(e).slice(0, 300)));
+await p.goto('http://localhost:5211/'); await p.waitForTimeout(3500);
+const tag = mobile ? 'm' : 'd';
+await p.evaluate(() => { const s = window.__store.getState(); s.set({ selectedStopId: s.data.stops[0].id }); });
+await p.waitForTimeout(800);
+if (mobile) { await p.click('.sheet .grab', { force: true, noWaitAfter: true, timeout: 8000 }); await p.waitForTimeout(500); }
+await p.screenshot({ path: `/tmp/panel-${tag}-1.png` });
+await p.screenshot({path:'/tmp/panel-dbg.png'});
+await p.click('.sp-card >> text=Add hotel', { force: true, noWaitAfter: true, timeout: 8000 }); await p.fill('.sp-form input >> nth=0', 'Hotel Gracery'); await p.click('.sp-form >> text=Save', { force: true, noWaitAfter: true, timeout: 8000 }); await p.waitForTimeout(300);
+await p.click('text=+ Activity', { force: true, noWaitAfter: true, timeout: 8000 }); await p.fill('.sp-form input >> nth=0', 'Ramen night'); await p.click('.sp-form >> text=Add', { force: true, noWaitAfter: true, timeout: 8000 }); await p.waitForTimeout(300);
+await p.click('.sp-react button >> nth=0', { force: true, noWaitAfter: true, timeout: 8000 }); await p.waitForTimeout(300);
+await p.screenshot({ path: `/tmp/panel-${tag}-2.png` });
+await p.click('.sp-tabs >> text=Eat', { force: true, noWaitAfter: true, timeout: 8000 }); await p.fill('input[aria-label="New food spot"]', 'Ichiran'); await p.keyboard.press('Enter'); await p.waitForTimeout(300);
+await p.screenshot({ path: `/tmp/panel-${tag}-3.png` });
+await p.click('.sp-tabs >> text=Chat', { force: true, noWaitAfter: true, timeout: 8000 }); await p.fill('input[aria-label="Comment"]', 'Looks great'); await p.keyboard.press('Enter'); await p.waitForTimeout(300);
+await p.screenshot({ path: `/tmp/panel-${tag}-4.png` });
+const sw = await p.evaluate(() => { const b = document.querySelector('.sheet .body'); return [b.scrollWidth, b.clientWidth]; });
+console.log('scrollW/clientW', sw, errs.join('\n') || 'no errors');
+await b.close();

@@ -1,0 +1,160 @@
+/* Static trip-planner bar. --tl-h is the bar height that city panels and the canvas reserve at the bottom. */
+:root{--tl-h:150px;--tl-gap:0px}
+:root[data-planner="closed"]{--tl-h:56px}
+.tp{position:absolute;left:0;right:0;bottom:0;z-index:25;height:calc(var(--tl-h) + var(--safe-b,0px));box-sizing:border-box;padding:10px 12px calc(var(--safe-b,0px) + 10px);
+  background:var(--paper);border-radius:22px 22px 0 0;box-shadow:0 -3px 16px rgba(27,42,74,.15);display:flex;flex-direction:column;gap:4px;
+  font-family:var(--font-ui);color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:height .2s ease}
+.tp.closed{padding-top:8px;padding-bottom:calc(var(--safe-b,0px) + 8px)}
+.tp button{border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:12px;font-weight:700;padding:0 10px;line-height:1;box-shadow:0 2px 0 var(--ink);font-family:inherit}
+.tp button:active{transform:translateY(2px);box-shadow:none}
+.tp button:focus-visible{outline:3px solid var(--momiji);outline-offset:2px}
+
+/* header */
+.tp-head{display:flex;align-items:center;gap:8px;flex:none;height:36px;margin-bottom:4px}
+.tp-title{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px;white-space:nowrap;overflow:hidden}
+.tp-title b{font-family:var(--font-title);font-weight:400;font-size:16px;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tp-title span{font-size:13px;font-weight:700;opacity:.7;flex:none}
+.tp-collapse{width:36px;height:36px;font-size:15px;padding:0!important;flex:none}
+.tp-collapse svg,.tp-summary-chevron{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tp-btn{height:36px;font-size:13px;flex:none}
+.tp-err{font-size:12px;font-weight:700;color:var(--momiji)}
+.tp-issue{font-size:12px;font-weight:700;color:var(--momiji);max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-save-status{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
+.tp .tp-undo{height:30px;padding:0 8px;border:1px solid var(--ink);box-shadow:none;font-size:12px}
+.tp-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+.tp-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.tp-edit{white-space:nowrap}
+.tp-transport{white-space:nowrap}
+@media(max-width:639px){.tp:not(.expanded) .tp-expand .tp-btn-t{display:none}.tp .tp-transport{font-size:12px;padding-inline:8px}}
+
+/* ruler: one equal slot per day, a tick under each label marks the slot centre where block edges snap */
+.tp-body{display:flex;flex-direction:column;gap:2px;flex:1;min-height:0}
+.tp-ruler{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));height:34px;flex:none}
+.tp-day{position:relative;text-align:center;font-size:9px;line-height:1.1;font-weight:700;overflow:hidden;white-space:nowrap;padding-bottom:6px}
+.tp-day .wd1{display:none}
+.tp-day b{display:block;font-family:var(--font-title);font-weight:400;font-size:13px}
+.tp-day i{position:absolute;left:50%;bottom:0;width:2px;height:6px;margin-left:-1px;border-radius:1px;background:rgba(27,42,74,.45)}
+.tp-day.hol b,.tp-day.hol .wd,.tp-day.hol .wd1{color:var(--momiji)}
+.tp-month-marker{position:absolute;left:0;top:0;font-size:9px;background:var(--paper);padding:0 2px;border-radius:3px}
+
+/* track: .tp-blocks clips and rounds the read-only city route. */
+.tp-track{position:relative;height:50px;flex:none;touch-action:manipulation}
+.tp-blocks{position:absolute;inset:0;border-radius:12px;border:2px solid var(--ink);overflow:hidden;background:#e9e3d3;box-sizing:border-box}
+.tp-block{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:1px;padding:0 10px!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;border-left:2px solid var(--ink)!important;overflow:hidden;white-space:nowrap;text-align:left;cursor:pointer;min-width:0;max-width:100%;touch-action:manipulation}
+.tp-block:first-child{border-left:0!important}
+.tp-block b{font-size:13px;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tp-block small{font-size:11px;font-weight:700;opacity:.7;line-height:1.1;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tp-block small em{font-style:normal;font-weight:500}
+.tp-block.short{padding:0 3px!important}
+.tp-block.short b,.tp-block.short small{text-overflow:clip}
+.tp-block.short small em{display:none}
+.tp-block.cur{box-shadow:inset 0 0 0 3px var(--ink)!important}
+.tp-block.bad{background-image:repeating-linear-gradient(45deg,transparent 0 6px,rgba(255,255,255,.55) 6px 10px)}
+
+.tp-warn{position:absolute;top:-14px;transform:translateX(-50%);font-size:14px;z-index:4}
+
+/* expanded: calendar + stop management below the ruler. Phones go full-screen; desktop grows the bar upward (below). */
+.tp.expanded{background:var(--paper)}
+.tp-expand{height:36px;font-size:13px;flex:none}
+.tp-exp{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:12px 2px 16px;display:flex;flex-direction:column;gap:20px;user-select:text;-webkit-user-select:text}
+.tp-cal{display:flex;flex-direction:column;gap:14px;min-width:0}
+.tp-months{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.tp-month h3,.tp-detail h3{margin:0 0 6px;font-family:var(--font-title);font-weight:400;font-size:15px}
+.tp-wd,.tp-wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.tp-wk{margin-top:3px}
+.tp-wd span{text-align:center;font-size:11px;font-weight:700;opacity:.7}
+.tp-wd span.hol{color:var(--momiji);opacity:1}
+.tp .tp-cell{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;min-height:42px;padding:0;border-radius:10px;border:1.5px solid var(--ink);box-shadow:none;background:#fff}
+.tp .tp-cell.pad{border:0;background:none;box-shadow:none}
+.tp .tp-cell b{font-family:var(--font-title);font-weight:400;font-size:14px;line-height:1}
+.tp .tp-cell.hol b{color:var(--momiji)}
+.tp .tp-cell .dots{font-style:normal;font-size:11px;line-height:.5;letter-spacing:1px;height:6px}
+.tp .tp-cell.off{opacity:.4;border-color:rgba(27,42,74,.25);background:transparent;cursor:default}
+.tp .tp-cell.sel{box-shadow:inset 0 0 0 3px var(--ink)}
+.tp-detail{background:rgba(255,255,255,.6);border:2px solid var(--ink);border-radius:14px;padding:10px 12px;font-size:14px}
+.tp-detail p{margin:0}
+.tp-detail .sp-list{margin-top:8px}
+.tp .swatch{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink);flex:none}
+.tp .tp-dstop{width:100%;box-sizing:border-box;display:flex;align-items:center;gap:8px;padding:8px 10px;margin:6px 0;min-height:44px;text-align:left;font-weight:400;font-size:14px;box-shadow:0 2px 0 var(--ink)}
+.tp-dstop b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-dstop small{font-weight:700;opacity:.7;font-size:12px;flex:none}
+.tp-stops-col .tp-srow{display:flex;align-items:center;gap:8px;padding:6px 4px 6px 12px}
+.tp-srow .tp-sname{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tp-srow .tp-sname small{font-size:12px}
+.tp-stops-col .sp-sec:first-child{margin-top:0}
+.tp .sp-ghost{border:0;background:transparent;box-shadow:none;border-radius:0}
+.tp-mobile-stops{display:none}
+.tp-mobile-range{display:none}
+@media (max-width:899px){
+  .tp.expanded{top:0;height:100dvh;border-radius:0;padding-top:calc(var(--safe-t,0px) + 10px);z-index:40}
+  .tp.expanded .tp-ruler,.tp.expanded .tp-track{display:none}
+  .tp:not(.expanded) .tp-ruler,.tp:not(.expanded) .tp-track{display:none}
+  .tp-mobile-range{flex:none;height:15px;line-height:15px;font-size:11px;font-weight:700;color:var(--ink);opacity:.72;white-space:nowrap}
+  .tp:not(.expanded) .tp-mobile-stops{display:flex;align-items:stretch;gap:8px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;padding:3px 2px 6px;scrollbar-width:thin}
+  .tp-mobile-stop{min-width:176px;max-width:176px;flex:0 0 auto;scroll-snap-align:start}
+  .tp .tp-mobile-stop button{width:100%;height:66px;display:grid;grid-template-columns:12px minmax(0,1fr);grid-template-rows:1fr 1fr;align-items:center;column-gap:8px;text-align:left;padding:8px 10px;background:color-mix(in srgb,var(--stop-color) 35%,white);border:1.5px solid rgba(27,42,74,.3);box-shadow:none}
+  .tp-mobile-stop button.selected{border:2px solid var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+  .tp-mobile-dot{grid-row:1/3;width:11px;height:11px;border-radius:50%;background:var(--stop-color);border:1px solid var(--ink)}
+  .tp-mobile-stop strong{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tp-mobile-stop small{font-size:11px;font-weight:600;white-space:nowrap;color:var(--ink)}
+  .tp-title{display:block;white-space:normal}
+  .tp-title span{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tp-edit{height:36px;font-size:12px}
+  .tp-issue{position:absolute;right:8px;bottom:calc(100% + 8px);max-width:calc(100% - 16px);padding:6px 10px;border:1px solid var(--momiji);border-radius:9px;background:var(--paper)}
+}
+
+@media (min-width:900px){
+  .tp{left:16px;right:16px;bottom:16px;height:var(--tl-h);border-radius:22px;padding:10px 16px}
+  .tp.closed{padding:8px 16px}
+  :root{--tl-gap:16px}
+  :root[data-planner="expanded"]{--tl-h:min(64dvh,660px)}
+  .tp-exp{display:flex;flex-direction:column;gap:18px}
+}
+@media (min-width:640px){ .tp-title b{font-size:18px} .tp-block{padding:0 12px!important} .tp-block b{font-size:14px} }
+@media (max-width:639px){ .tp-block small em{display:none} }
+@media (max-width:480px){
+  .tp{padding-left:8px;padding-right:8px}
+  .tp:not(.expanded) .tp-title{display:none}
+  .tp:not(.expanded) .tp-mobile-range{display:block}
+  .tp-expand{padding:0 9px!important}
+  .tp-edit{padding:0 7px!important}
+  .tp-save-status{position:absolute;bottom:calc(100% + 6px);right:8px;background:var(--paper);border-radius:8px;padding:4px 8px}
+  .tp .tp-undo{position:absolute;bottom:calc(100% + 5px);right:62px;background:var(--paper)}
+  .tp-day .wd{display:none} .tp-day .wd1{display:block}
+  .tp-block{padding:0 5px!important} .tp-block b{font-size:12px}
+}
+/* landscape phones: short viewport, so a single compact row of date numbers */
+@media (max-height:500px) and (orientation:landscape){
+  :root{--tl-h:122px}
+  :root[data-planner="closed"]{--tl-h:56px}
+  .tp{padding-top:6px;padding-bottom:calc(var(--safe-b,0px) + 6px)}
+  .tp.closed{padding-top:5px;padding-bottom:calc(var(--safe-b,0px) + 5px)}
+  .tp-head{height:32px} .tp-collapse,.tp-btn{height:32px}
+  .tp:not(.expanded) .tp-title{display:none}
+  .tp:not(.expanded) .tp-mobile-range{display:block}
+  .tp.expanded .tp-title{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .tp.expanded .tp-title span{display:inline;white-space:nowrap}
+  .tp-ruler{height:22px} .tp-day{padding-bottom:5px} .tp-day .wd,.tp-day .wd1{display:none}
+  .tp-track{height:44px}
+  .tp-mobile-stop button{height:50px!important}
+}
+@media (prefers-reduced-motion:reduce){ .tp{transition:none} }
+
+/* Compact planner uses the existing height variable, so city sheets and hidden pills stay above it. */
+.tp.closed{padding-top:6px;padding-bottom:calc(var(--safe-b,0px) + 6px)}
+.tp.closed .tp-head{height:44px;margin:0;gap:6px}
+.tp .tp-summary{flex:1;min-width:0;min-height:44px;display:flex;align-items:center;gap:10px;padding:0 4px;border:0;background:transparent;box-shadow:none;text-align:left;line-height:1.2}
+.tp-summary-dot{width:12px;height:12px;flex:none;border:1.5px solid var(--ink);border-radius:50%}
+.tp-summary-text{flex:1;min-width:0;display:grid;gap:3px}
+.tp-summary-text b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-summary-text>span{font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-summary-chevron{font-size:17px;flex:none;margin-right:4px}
+.tp.closed .tp-btn{height:44px;min-width:44px;padding:0 10px}
+.tp.closed .tp-err{position:absolute;right:12px;bottom:calc(100% + 8px);background:var(--paper);border:1px solid var(--momiji);border-radius:10px;padding:8px 12px;max-width:calc(100% - 24px)}
+.tp-summary:focus-visible{outline:3px solid var(--momiji);outline-offset:1px;border-radius:10px}
+@media(min-width:900px){.tp.closed{padding:6px 16px}}
+/* When a mobile city sheet touches the compact bar, join their surfaces without exposed map corners or a shadow over the sheet. */
+@media(max-width:899px){
+  #root:has(.arrival-wrap .sheet) .tp.closed{border-radius:0;background:var(--paper);box-shadow:inset 0 1px 0 rgba(27,42,74,.12)}
+}

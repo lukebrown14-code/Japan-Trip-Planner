@@ -1,0 +1,46 @@
+.tp-ne-overlay{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;box-sizing:border-box;background:rgba(19,32,61,.55);font-family:var(--font-ui);color:var(--ink);user-select:text;-webkit-user-select:text}
+.tp-ne{display:flex;flex-direction:column;width:min(100%,500px);max-height:calc(100dvh - 32px);overflow:hidden;box-sizing:border-box;padding:22px;background:var(--paper);border:1px solid rgba(27,42,74,.2);border-radius:20px;box-shadow:0 16px 48px rgba(19,32,61,.25)}
+.tp-ne-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.tp-ne-eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:11px;font-weight:800;opacity:.65}
+.tp-ne h2{margin:3px 0 10px;font-family:var(--font-title);font-weight:400;font-size:24px;line-height:1.2}
+.tp-ne button,.tp-ne input{font:inherit;color:inherit}
+.tp-ne button{cursor:pointer}
+.tp-ne button:disabled{opacity:.45;cursor:default}
+.tp-ne button:focus-visible,.tp-ne input:focus-visible{outline:3px solid var(--momiji);outline-offset:2px}
+.tp-ne-close{display:grid;place-items:center;flex:none;width:44px;height:44px;padding:0;border:1px solid rgba(27,42,74,.25);border-radius:12px;background:#fff;font-size:27px;line-height:1}
+.tp-ne-intro{margin:0 0 16px;font-size:13px;line-height:1.45}
+.tp-ne-list{display:grid;gap:8px;min-height:0;margin-bottom:14px;overflow:auto}
+.tp-ne-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;min-width:0;padding:10px;border:1px solid rgba(27,42,74,.16);border-radius:12px;background:#fff}
+.tp-ne-city{display:flex;align-items:center;gap:8px;min-width:0}
+.tp-ne-dot{flex:none;width:11px;height:11px;border:1px solid rgba(27,42,74,.2);border-radius:50%}
+.tp-ne-city-text{display:grid;gap:2px;min-width:0}
+.tp-ne-city-text strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.tp-ne-city-text small{font-size:11px;opacity:.72;white-space:nowrap}
+.tp-ne-controls{display:grid;grid-template-columns:44px 48px 44px;gap:4px;align-items:center}
+.tp-ne-controls button{width:44px;height:44px;padding:0;border:1px solid rgba(27,42,74,.3);border-radius:9px;background:#fff;font-size:22px}
+.tp-ne-input-wrap{display:block}
+.tp-ne-input-wrap input{width:48px;height:44px;box-sizing:border-box;padding:0 2px;border:1px solid rgba(27,42,74,.3);border-radius:9px;background:#fff;text-align:center;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;appearance:textfield;-moz-appearance:textfield}
+.tp-ne-input-wrap input::-webkit-outer-spin-button,.tp-ne-input-wrap input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.tp-ne-input-wrap input[aria-invalid="true"]{border-color:var(--momiji)}
+.tp-ne-original{grid-column:1/-1;margin-left:19px;font-size:11px;opacity:.7}
+.tp-ne-total{display:flex;justify-content:space-between;flex-wrap:wrap;gap:3px 12px;margin-bottom:14px;padding:10px 12px;border:1px solid var(--momiji);border-radius:11px;background:#fff7f2;font-size:12px;line-height:1.4}
+.tp-ne-total.balanced{border-color:rgba(27,42,74,.18);background:#fff}
+.tp-ne-total span{font-weight:700}
+.tp-ne-warning{margin:0 0 14px;padding:12px 14px;border:1px solid var(--momiji);border-radius:12px;background:#fff7f2;font-size:13px;line-height:1.4}
+.tp-ne-warning p{margin:5px 0 8px}
+.tp-ne-warning ul{max-height:100px;overflow:auto;margin:0;padding-left:20px}
+.tp-ne-warning li{margin:5px 0}
+.tp-ne-warning li small{display:block;opacity:.72}
+.tp-ne-actions{display:flex;justify-content:flex-end;gap:8px}
+.tp-ne-actions button{min-height:44px;padding:8px 16px;border:1px solid var(--ink);border-radius:11px;font-weight:800}
+.tp-ne-cancel{background:#fff}
+.tp-ne-apply{background:var(--ink);color:#fff!important}
+@media(max-width:639px){.tp-ne-overlay{align-items:end;padding:0}.tp-ne{width:100%;max-height:calc(100dvh - var(--safe-t,0px) - 12px);padding:20px 16px calc(20px + var(--safe-b,0px));border-radius:20px 20px 0 0}}
+@media(max-width:359px){.tp-ne-row{grid-template-columns:minmax(0,1fr);gap:8px}.tp-ne-controls{justify-content:start}.tp-ne-original{margin-left:0}}
+@media(max-height:500px) and (orientation:landscape){
+  .tp-ne-overlay{padding:4px}
+  .tp-ne{max-height:calc(100dvh - 8px);padding:10px 14px}
+  .tp-ne h2{margin-bottom:2px;font-size:21px}
+  .tp-ne-intro{margin-bottom:8px}
+  .tp-ne-list,.tp-ne-total{margin-bottom:8px}
+}

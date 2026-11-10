@@ -1,0 +1,13 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch({ args: ['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'] });
+const p = await (await b.newContext({ viewport: { width: 800, height: 600 } })).newPage();
+p.on('websocket', ws => ws.on('framereceived', f => console.log('WS<-', String(f.payload).slice(0, 110))));
+p.on('pageerror', e => console.log('PAGEERR', String(e).slice(0, 300)));
+await p.goto('http://localhost:3200'); await p.waitForTimeout(1200);
+await p.getByText('Luke', { exact: true }).first().click(); await p.locator('input[type=password]').fill('sakura'); await p.locator('button.go').click();
+await p.waitForFunction(() => window.__store?.getState().me); await p.waitForTimeout(2500);
+await p.evaluate(async () => { const h = { 'content-type': 'application/json' };
+  await fetch('/api/activities', { method: 'POST', headers: h, body: JSON.stringify({ stopId: 's3', kind: 'activity', title: 'DBG act', status: 'idea' }) }); });
+await p.waitForTimeout(2500);
+console.log(await p.evaluate(() => JSON.stringify(window.__store.getState().data.activities.filter(a => a.title === 'DBG act'))));
+await b.close();

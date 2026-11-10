@@ -1,0 +1,9 @@
+/* City panel offset above the trip-planner bar (planner.css owns --tl-h), panel header, and the shared .chip status pills. */
+.arrival-wrap .sheet{bottom:calc(var(--tl-h) + var(--safe-b,0px));padding-bottom:0;z-index:22}
+@media (min-width:900px){ .arrival-wrap .sheet{bottom:calc(var(--tl-h) + 28px);top:72px} }
+.ac-head{display:flex;align-items:center;gap:10px;padding:0 10px 6px 16px;flex:none}
+.ac-head h2{margin:0;font-family:var(--font-title);font-weight:400;font-size:22px;line-height:1.1;flex:1;min-width:0}
+.ac-head h2 small{font-size:15px;margin-left:8px;color:var(--momiji)}
+.chip{font-size:11px;font-weight:700;border-radius:999px;padding:3px 8px;border:1.5px solid var(--ink);background:#eee;white-space:nowrap}
+.chip.idea{background:#e9e4f7}.chip.planned{background:var(--gold)}.chip.booked{background:#9fdcab}.chip.none{background:#ffd9d0}
+@media (max-height:500px) and (orientation:landscape){ .arrival-wrap .sheet{left:auto;right:12px;top:calc(var(--safe-t,0px) + 56px);bottom:calc(var(--tl-h) + var(--safe-b,0px) + 8px);width:min(400px,45vw);height:auto!important;border-radius:18px;padding-bottom:0} .arrival-wrap .sheet .grab{display:none} }

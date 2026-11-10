@@ -1,0 +1,19 @@
+:root { --ink:#1b2a4a; --paper:#fff6e5; --sakura:#ff9eb5; --momiji:#e4572e; --gold:#f2b134; --sky:#7fd1f5; --panel:rgba(255,246,229,.94);
+  --font-title:'Dela Gothic One',sans-serif; --font-ui:'Zen Maru Gothic',system-ui,sans-serif; --safe-b:env(safe-area-inset-bottom); --safe-t:env(safe-area-inset-top); --header-clearance:72px; }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body,#root{margin:0;height:100%;overflow:hidden;background:var(--ink);color:var(--ink);font-family:var(--font-ui)}
+#root{height:100dvh;position:relative}
+button{font:inherit;min-height:44px;min-width:44px;cursor:pointer}
+.stage{position:absolute;inset:0;touch-action:none}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-radius:22px 22px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.25);
+  transition:height .25s ease;padding-bottom:var(--safe-b);display:flex;flex-direction:column;z-index:20;overflow:hidden}
+.sheet .grab{height:28px;display:grid;place-items:center;cursor:grab;touch-action:none;flex:none}
+.sheet .grab i{width:44px;height:5px;border-radius:3px;background:rgba(27,42,74,.3)}
+.sheet .grab:focus-visible{outline:3px solid var(--momiji);outline-offset:2px;border-radius:999px}
+.sheet .body{overflow:auto;flex:1;padding:0 16px 24px;overscroll-behavior:contain}
+@media (min-width:900px){ .sheet{left:auto;right:16px;bottom:16px;top:72px;width:400px;border-radius:22px;height:auto!important} .sheet .grab{display:none} }
+.topbar{position:absolute;top:0;left:0;right:0;padding:calc(var(--safe-t) + 8px) 12px 8px;display:flex;gap:8px;align-items:center;z-index:30;pointer-events:none}
+.topbar>*{pointer-events:auto}
+@media(max-width:520px){.topbar{padding-left:8px;padding-right:8px;gap:6px}}
+/* landscape phones: the sheet is a right-hand panel (like desktop) so the map stays visible */
+@media (max-height:500px) and (orientation:landscape){ .sheet{left:auto;right:12px;bottom:12px;top:calc(var(--safe-t,0px) + 56px);width:min(400px,45vw);border-radius:18px;height:auto!important} .sheet .grab{display:none} }

@@ -1,0 +1,26 @@
+/* Calendar viewing and stop management use separate planner views. */
+.tp.expanded .tp-calendar-view{display:flex;flex-direction:column;gap:12px}
+.tp-calendar-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none}
+.tp-calendar-tabs{display:flex;gap:6px;flex:1}
+.tp .tp-calendar-tabs button,.tp .tp-calendar-action{min-height:40px;box-shadow:none;border:1px solid rgba(27,42,74,.3);background:var(--paper);font-size:13px}
+.tp .tp-calendar-tabs button{flex:1}
+.tp .tp-calendar-tabs button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.tp-calendar-actions{display:flex;align-items:center;gap:8px}
+.tp .tp-calendar-action{white-space:nowrap;padding:0 12px}
+.tp .tp-calendar-action:hover,.tp .tp-calendar-tabs button:hover{border-color:var(--ink)}
+.tp.expanded .tp-cal{display:flex;flex-direction:column;gap:14px;min-width:0}
+.tp.expanded .tp-stops-col{max-width:740px;width:100%;margin:0 auto}
+.tp-calendar-view .tp-detail{background:var(--paper);border:1px solid rgba(27,42,74,.28);box-shadow:0 3px 12px rgba(27,42,74,.08)}
+.tp-calendar-view .tp-cell.sel{outline:2px solid var(--ink);outline-offset:1px;box-shadow:inset 0 0 0 2px var(--paper)}
+.tp-calendar-view .tp-cell:focus-visible,.tp-calendar-view button:focus-visible{outline:3px solid var(--momiji);outline-offset:2px}
+@media(max-width:899px){
+  .tp-calendar-view .tp-manage-stops{display:none}
+  .tp.expanded .tp-cal .tp-detail{order:-1;position:sticky;top:-12px;z-index:2;max-height:clamp(120px,25dvh,190px);overflow:auto;overscroll-behavior:contain}
+  .tp.expanded .tp-cal .tp-months{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+  .tp.expanded .tp-calendar-view{padding-top:6px}
+}
+@media(min-width:900px){
+  .tp-calendar-view .tp-calendar-tabs{display:none}
+  .tp.expanded .tp-cal{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:18px;align-items:start}
+  .tp.expanded .tp-cal .tp-detail{position:sticky;top:0;max-height:calc(min(64dvh,660px) - 180px);overflow:auto}
+}
